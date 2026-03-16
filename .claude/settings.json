@@ -1,0 +1,7 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(ls c:/Users/grego/rust_projects/cv_site/dist/*.svg)"
+    ]
+  }
+}

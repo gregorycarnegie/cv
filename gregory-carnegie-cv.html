@@ -1,0 +1,853 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gregory Carnegie — IT Technician</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Mono:wght@300;400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0c0c0f;
+    --surface: #13131a;
+    --surface2: #1a1a25;
+    --accent: #e8c97e;
+    --accent2: #7ec9e8;
+    --text: #e8e8f0;
+    --muted: #787890;
+    --border: rgba(232,201,126,0.15);
+    --glow: rgba(232,201,126,0.08);
+  }
+
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 300;
+    overflow-x: hidden;
+    line-height: 1.6;
+  }
+
+  /* Grain overlay */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 9999;
+    opacity: 0.4;
+  }
+
+  /* NAV */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.2rem 3rem;
+    background: rgba(12,12,15,0.85);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .nav-logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--accent);
+    letter-spacing: 0.05em;
+  }
+
+  .nav-links {
+    display: flex;
+    gap: 2rem;
+    list-style: none;
+  }
+
+  .nav-links a {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--muted);
+    text-decoration: none;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    transition: color 0.3s;
+  }
+
+  .nav-links a:hover { color: var(--accent); }
+
+  /* HERO */
+  .hero {
+    min-height: 100vh;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    align-items: center;
+    padding: 6rem 3rem 3rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero::after {
+    content: '';
+    position: absolute;
+    top: -200px; right: -200px;
+    width: 700px; height: 700px;
+    background: radial-gradient(circle, rgba(232,201,126,0.06) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .hero-text { max-width: 600px; }
+
+  .hero-tag {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 1.5rem;
+    opacity: 0;
+    animation: fadeUp 0.8s ease 0.2s forwards;
+  }
+
+  .hero-name {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(3rem, 7vw, 6rem);
+    line-height: 1;
+    font-weight: 900;
+    margin-bottom: 0.5rem;
+    opacity: 0;
+    animation: fadeUp 0.8s ease 0.4s forwards;
+  }
+
+  .hero-name span { color: var(--accent); }
+
+  .hero-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(1rem, 2.5vw, 1.6rem);
+    color: var(--muted);
+    font-style: italic;
+    margin-bottom: 2rem;
+    opacity: 0;
+    animation: fadeUp 0.8s ease 0.6s forwards;
+  }
+
+  .hero-desc {
+    color: #a0a0b8;
+    font-size: 0.95rem;
+    max-width: 480px;
+    margin-bottom: 2.5rem;
+    line-height: 1.8;
+    opacity: 0;
+    animation: fadeUp 0.8s ease 0.8s forwards;
+  }
+
+  .hero-actions {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    opacity: 0;
+    animation: fadeUp 0.8s ease 1s forwards;
+  }
+
+  .btn {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    text-decoration: none;
+    padding: 0.85rem 2rem;
+    border: 1px solid var(--accent);
+    color: var(--accent);
+    background: transparent;
+    cursor: pointer;
+    transition: all 0.3s;
+    display: inline-block;
+  }
+
+  .btn:hover {
+    background: var(--accent);
+    color: var(--bg);
+  }
+
+  .btn-ghost {
+    border-color: var(--border);
+    color: var(--muted);
+  }
+
+  .btn-ghost:hover {
+    border-color: var(--muted);
+    color: var(--text);
+    background: transparent;
+  }
+
+  .hero-stats {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    padding-left: 4rem;
+    border-left: 1px solid var(--border);
+    opacity: 0;
+    animation: fadeIn 1s ease 1.2s forwards;
+  }
+
+  .stat-item { }
+
+  .stat-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.8rem;
+    font-weight: 700;
+    color: var(--accent);
+    line-height: 1;
+  }
+
+  .stat-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-top: 0.3rem;
+  }
+
+  .stat-divider {
+    width: 40px;
+    height: 1px;
+    background: var(--border);
+  }
+
+  /* CONTACT BAR */
+  .contact-bar {
+    background: var(--surface);
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    padding: 1.2rem 3rem;
+    display: flex;
+    gap: 3rem;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+
+  .contact-item {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+  }
+
+  .contact-icon {
+    width: 28px; height: 28px;
+    border: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--accent);
+    font-size: 0.8rem;
+    flex-shrink: 0;
+  }
+
+  .contact-text {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.72rem;
+    color: var(--muted);
+    letter-spacing: 0.05em;
+  }
+
+  .contact-text a {
+    color: var(--muted);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+  .contact-text a:hover { color: var(--accent); }
+
+  /* SECTIONS */
+  section {
+    padding: 5rem 3rem;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .section-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .section-label::after {
+    content: '';
+    flex: 1;
+    max-width: 60px;
+    height: 1px;
+    background: var(--accent);
+    opacity: 0.4;
+  }
+
+  .section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(1.8rem, 4vw, 3rem);
+    font-weight: 700;
+    margin-bottom: 3rem;
+    line-height: 1.2;
+  }
+
+  /* SKILLS GRID */
+  .skills-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+  }
+
+  .skill-card {
+    background: var(--surface);
+    padding: 1.8rem;
+    transition: background 0.3s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .skill-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 3px;
+    height: 0;
+    background: var(--accent);
+    transition: height 0.3s;
+  }
+
+  .skill-card:hover { background: var(--surface2); }
+  .skill-card:hover::before { height: 100%; }
+
+  .skill-name {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.75rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 0.6rem;
+  }
+
+  .skill-desc {
+    font-size: 0.85rem;
+    color: #8888a8;
+    line-height: 1.6;
+  }
+
+  /* EXPERIENCE */
+  .experience-list { display: flex; flex-direction: column; gap: 0; }
+
+  .exp-item {
+    display: grid;
+    grid-template-columns: 200px 1fr;
+    gap: 0;
+    border-bottom: 1px solid var(--border);
+    padding: 2.5rem 0;
+    position: relative;
+  }
+
+  .exp-item:first-child { border-top: 1px solid var(--border); }
+
+  .exp-meta { padding-right: 3rem; }
+
+  .exp-dates {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+    color: var(--accent);
+    margin-bottom: 0.5rem;
+    line-height: 1.5;
+  }
+
+  .exp-company {
+    font-size: 0.8rem;
+    color: var(--muted);
+    font-style: italic;
+  }
+
+  .exp-content { }
+
+  .exp-role {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.4rem;
+    font-weight: 700;
+    margin-bottom: 0.8rem;
+    color: var(--text);
+  }
+
+  .exp-summary {
+    font-size: 0.88rem;
+    color: #8888a8;
+    margin-bottom: 1.2rem;
+    line-height: 1.7;
+  }
+
+  .exp-bullets {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .exp-bullets li {
+    font-size: 0.83rem;
+    color: #7878a0;
+    padding-left: 1.2rem;
+    position: relative;
+    line-height: 1.6;
+  }
+
+  .exp-bullets li::before {
+    content: '—';
+    position: absolute;
+    left: 0;
+    color: var(--accent);
+    opacity: 0.6;
+  }
+
+  /* EDUCATION */
+  .edu-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+    margin-bottom: 2rem;
+  }
+
+  .edu-card {
+    background: var(--surface);
+    padding: 2rem;
+    transition: background 0.3s;
+  }
+
+  .edu-card:hover { background: var(--surface2); }
+
+  .edu-years {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 0.8rem;
+  }
+
+  .edu-inst {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin-bottom: 0.4rem;
+  }
+
+  .edu-qual {
+    font-size: 0.82rem;
+    color: var(--muted);
+  }
+
+  /* INTERESTS */
+  .interests-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 1rem;
+  }
+
+  .interest-pill {
+    border: 1px solid var(--border);
+    padding: 1rem 1.2rem;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+  }
+
+  .interest-pill:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+    background: var(--glow);
+  }
+
+  .interest-icon { font-size: 1.1rem; }
+
+  /* FOOTER */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 2rem 3rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+
+  .footer-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 0.9rem;
+    color: var(--muted);
+  }
+
+  .footer-note {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.15em;
+    color: var(--muted);
+    opacity: 0.5;
+  }
+
+  /* ANIMATIONS */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  /* SCROLL REVEAL */
+  .reveal {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+
+  .reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* SCROLLBAR */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--border); }
+  ::-webkit-scrollbar-thumb:hover { background: var(--accent); }
+
+  /* RESPONSIVE */
+  @media (max-width: 768px) {
+    nav { padding: 1rem 1.5rem; }
+    .nav-links { display: none; }
+    .hero { grid-template-columns: 1fr; padding: 5rem 1.5rem 3rem; }
+    .hero-stats { padding-left: 0; border-left: none; border-top: 1px solid var(--border); padding-top: 2rem; flex-direction: row; flex-wrap: wrap; }
+    .contact-bar { padding: 1.2rem 1.5rem; gap: 1rem; }
+    section { padding: 3rem 1.5rem; }
+    .exp-item { grid-template-columns: 1fr; gap: 0.5rem; }
+    .exp-meta { padding-right: 0; }
+    footer { padding: 1.5rem; }
+  }
+
+  /* Decorative number */
+  .big-num {
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    font-family: 'Playfair Display', serif;
+    font-size: 8rem;
+    font-weight: 900;
+    color: var(--surface2);
+    line-height: 1;
+    pointer-events: none;
+    user-select: none;
+  }
+
+  .section-divider {
+    width: 100%;
+    height: 1px;
+    background: linear-gradient(to right, transparent, var(--border), transparent);
+    margin: 0 3rem;
+    max-width: calc(100% - 6rem);
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo">GC</div>
+  <ul class="nav-links">
+    <li><a href="#skills">Skills</a></li>
+    <li><a href="#experience">Experience</a></li>
+    <li><a href="#education">Education</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-text">
+    <p class="hero-tag">Available for new opportunities</p>
+    <h1 class="hero-name">Gregory<br><span>Carnegie</span></h1>
+    <p class="hero-title">IT Technician &amp; Developer</p>
+    <p class="hero-desc">
+      Experienced IT professional with 6+ years in infrastructure support, systems administration, and software development. Specialising in Windows environments, Active Directory, and building custom tools that solve real operational problems.
+    </p>
+    <div class="hero-actions">
+      <a href="#experience" class="btn">View Experience</a>
+      <a href="#contact" class="btn btn-ghost">Get In Touch</a>
+    </div>
+  </div>
+
+  <div class="hero-stats">
+    <div class="stat-item">
+      <div class="stat-num">6+</div>
+      <div class="stat-label">Years in IT</div>
+    </div>
+    <div class="stat-divider"></div>
+    <div class="stat-item">
+      <div class="stat-num">700</div>
+      <div class="stat-label">Users Supported</div>
+    </div>
+    <div class="stat-divider"></div>
+    <div class="stat-item">
+      <div class="stat-num">BSc</div>
+      <div class="stat-label">Physics, Nottingham</div>
+    </div>
+  </div>
+</div>
+
+<!-- CONTACT BAR -->
+<div class="contact-bar" id="contact">
+  <div class="contact-item">
+    <div class="contact-icon">✉</div>
+    <div class="contact-text"><a href="mailto:gregory.carnegie@live.com">gregory.carnegie@live.com</a></div>
+  </div>
+  <div class="contact-item">
+    <div class="contact-icon">☎</div>
+    <div class="contact-text">+44 (0)7411 852 611</div>
+  </div>
+  <div class="contact-item">
+    <div class="contact-icon">⌖</div>
+    <div class="contact-text">London, E10</div>
+  </div>
+  <div class="contact-item">
+    <div class="contact-icon">↗</div>
+    <div class="contact-text"><a href="https://linkedin.com/in/gregorycarnegie" target="_blank">linkedin.com/in/gregorycarnegie</a></div>
+  </div>
+  <div class="contact-item">
+    <div class="contact-icon">&lt;/&gt;</div>
+    <div class="contact-text"><a href="https://github.com/gregorycarnegie" target="_blank">github.com/gregorycarnegie</a></div>
+  </div>
+</div>
+
+<!-- SKILLS -->
+<section id="skills">
+  <p class="section-label reveal">Technical Competencies</p>
+  <h2 class="section-title reveal">What I Bring<br>to the Table</h2>
+
+  <div class="skills-grid reveal">
+    <div class="skill-card">
+      <div class="skill-name">Active Directory &amp; Entra ID</div>
+      <div class="skill-desc">User lifecycle management, batch operations, group policy administration, MFA configuration, and Entra ID / Azure AD hybrid environments.</div>
+    </div>
+    <div class="skill-card">
+      <div class="skill-name">PowerShell</div>
+      <div class="skill-desc">Scripting automation for AD management, network monitoring, device deployment, and report generation across Windows infrastructure.</div>
+    </div>
+    <div class="skill-card">
+      <div class="skill-name">Python &amp; Rust</div>
+      <div class="skill-desc">Advanced Python 3 certified via Codecademy. Building production desktop apps and data tooling in Rust. Author of multiple published projects.</div>
+    </div>
+    <div class="skill-card">
+      <div class="skill-name">SCCM / Device Deployment</div>
+      <div class="skill-desc">Imaging and deploying Windows machines at scale, software packaging, and endpoint management across a multi-device estate.</div>
+    </div>
+    <div class="skill-card">
+      <div class="skill-name">Azure &amp; Microsoft 365</div>
+      <div class="skill-desc">SharePoint access control, Exchange Online, Teams administration, and managing Microsoft 365 tenants for educational institutions.</div>
+    </div>
+    <div class="skill-card">
+      <div class="skill-name">Networking &amp; Security</div>
+      <div class="skill-desc">Network monitoring, access control systems (Paxton/InVentry), BitLocker encryption, BYOD mobile device management, VPS administration.</div>
+    </div>
+    <div class="skill-card">
+      <div class="skill-name">Linux</div>
+      <div class="skill-desc">Daily driver on Ubuntu and Fedora. Comfortable with SSH, PuTTY, VPS setup, and command-line administration.</div>
+    </div>
+    <div class="skill-card">
+      <div class="skill-name">Excel &amp; Data Analysis</div>
+      <div class="skill-desc">Pivot tables, Power Query, XLOOKUP, and macro development. Designed reporting solutions used across multiple organisations.</div>
+    </div>
+    <div class="skill-card">
+      <div class="skill-name">Hardware &amp; Infrastructure</div>
+      <div class="skill-desc">PC building, server hardware upgrades, component-level diagnosis, and managing physical infrastructure across a sixth form college.</div>
+    </div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- EXPERIENCE -->
+<section id="experience">
+  <p class="section-label reveal">Career History</p>
+  <h2 class="section-title reveal">Professional<br>Experience</h2>
+
+  <div class="experience-list">
+
+    <div class="exp-item reveal">
+      <div class="exp-meta">
+        <div class="exp-dates">Mar 2019<br>— Present</div>
+        <div class="exp-company">Harris Westminster<br>Sixth Form</div>
+      </div>
+      <div class="exp-content">
+        <div class="exp-role">IT Technician</div>
+        <p class="exp-summary">
+          Senior technician responsible for end-to-end IT operations at a prestigious sixth form college, supporting 600–700 staff and students across hardware, software, identity systems, and third-party integrations.
+        </p>
+        <ul class="exp-bullets">
+          <li>Manage Active Directory, Azure AD/Entra ID, and ticket systems (SMC &amp; Halo) — overseeing user onboarding and access control across all systems.</li>
+          <li>Provide hardware and software support for 600–700 users including MS365, access control, and third-party applications.</li>
+          <li>Developed a Windows desktop application in Python to automate the cropping of student passport photos for ID badge production.</li>
+          <li>Led the deployment of SchoolsBuddy activity sign-up system and oversaw the migration from Biostore to InVentry for visitor management.</li>
+          <li>Integrated the Paxton access control system with InVentry to enhance physical security.</li>
+          <li>Conducted hardware upgrades on user PCs and servers; maintained software and hardware inventory audits.</li>
+          <li>Managed SharePoint access permissions and collaborated with third-party suppliers on system integrations including Wonde and Bromcom.</li>
+          <li>Produced user-facing guides and posters for Wi-Fi connectivity and digital signage.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="exp-item reveal">
+      <div class="exp-meta">
+        <div class="exp-dates">Jul 2018<br>— Dec 2018</div>
+        <div class="exp-company">Fidessa Group PLC</div>
+      </div>
+      <div class="exp-content">
+        <div class="exp-role">IT Support Engineer</div>
+        <p class="exp-summary">
+          Office IT support role at a global financial software company, handling security incidents, account management, and mobile device setup.
+        </p>
+        <ul class="exp-bullets">
+          <li>Identified and escalated a critical BitLocker SSD encryption vulnerability, preventing a potential data security breach.</li>
+          <li>Managed account offboarding processes to ensure secure and compliant departures.</li>
+          <li>Created email distribution groups and managed shared mailbox permissions via the Exchange Admin Centre.</li>
+          <li>Assisted users with BlackBerry Work configuration on BYOD devices for secure mobile access.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="exp-item reveal">
+      <div class="exp-meta">
+        <div class="exp-dates">Nov 2014<br>— Jul 2018</div>
+        <div class="exp-company">St Thomas More<br>Catholic School</div>
+      </div>
+      <div class="exp-content">
+        <div class="exp-role">Teaching Assistant</div>
+        <p class="exp-summary">
+          Provided classroom support and developed bespoke internal tools to improve administrative efficiency and student outcomes in Maths, Science, and English.
+        </p>
+        <ul class="exp-bullets">
+          <li>Built a Microsoft Access database to automate student behaviour tracking and report card printing, with accompanying video training materials for staff.</li>
+          <li>Created a library of differentiated PowerPoint lessons and worksheets across multiple subjects.</li>
+          <li>Managed classroom behaviour for students with additional needs, fostering a positive and inclusive learning environment.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="exp-item reveal">
+      <div class="exp-meta">
+        <div class="exp-dates">Sep 2012<br>— Jan 2020</div>
+        <div class="exp-company">Global Tutors<br>&amp; Coaches</div>
+      </div>
+      <div class="exp-content">
+        <div class="exp-role">IT Support · Tutor · Administrator</div>
+        <p class="exp-summary">
+          Multi-role tenure spanning administration, tutoring, and IT support for an education services company.
+        </p>
+        <ul class="exp-bullets">
+          <li>Tutored students from primary through A-Level in Mathematics, Further Mathematics, and Physics.</li>
+          <li>Built Google Sheets automation with macros to streamline invoicing workflows.</li>
+          <li>Created MS Excel templates for payslips, invoicing, and attendance tracking; set up OneDrive for cloud document management.</li>
+          <li>Expanded the company's online visibility by establishing a Google Maps presence and maintaining the company website.</li>
+        </ul>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- EDUCATION -->
+<section id="education">
+  <p class="section-label reveal">Academic Background</p>
+  <h2 class="section-title reveal">Education</h2>
+
+  <div class="edu-grid reveal">
+    <div class="edu-card">
+      <div class="edu-years">2008 — 2011</div>
+      <div class="edu-inst">The University of Nottingham</div>
+      <div class="edu-qual">BSc (Hons) Physics — 2:2</div>
+    </div>
+    <div class="edu-card">
+      <div class="edu-years">2006 — 2008</div>
+      <div class="edu-inst">Sir George Monoux Sixth Form</div>
+      <div class="edu-qual">A-Level Mathematics (A) · Further Mathematics (C) · Physics (C)</div>
+    </div>
+    <div class="edu-card">
+      <div class="edu-years">2001 — 2006</div>
+      <div class="edu-inst">The Lammas Secondary School</div>
+      <div class="edu-qual">9 GCSEs — Grades A to C</div>
+    </div>
+    <div class="edu-card">
+      <div class="edu-years">Certification</div>
+      <div class="edu-inst">Codecademy</div>
+      <div class="edu-qual">Advanced Python 3</div>
+    </div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- INTERESTS -->
+<section>
+  <p class="section-label reveal">Beyond the Desk</p>
+  <h2 class="section-title reveal">Personal Interests</h2>
+
+  <div class="interests-grid reveal">
+    <div class="interest-pill"><span class="interest-icon">🖥️</span> DIY PC Building</div>
+    <div class="interest-pill"><span class="interest-icon">🦀</span> Rust Programming</div>
+    <div class="interest-pill"><span class="interest-icon">🏋️</span> Powerlifting</div>
+    <div class="interest-pill"><span class="interest-icon">🧗</span> Bouldering</div>
+    <div class="interest-pill"><span class="interest-icon">🎨</span> Blender &amp; 3D Art</div>
+    <div class="interest-pill"><span class="interest-icon">🔬</span> Photogrammetry</div>
+    <div class="interest-pill"><span class="interest-icon">🎵</span> Live Coding Music</div>
+    <div class="interest-pill"><span class="interest-icon">⚡</span> GPU Computing</div>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-name">Gregory Carnegie — IT Technician</div>
+  <div class="footer-note">London, E10 &nbsp;·&nbsp; Open to opportunities</div>
+</footer>
+
+<script>
+  // Scroll reveal
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+      }
+    });
+  }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+
+  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+</script>
+
+</body>
+</html>

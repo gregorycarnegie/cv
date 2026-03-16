@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(cargo audit)",
+      "Bash(cargo audit --version)",
+      "Bash(cargo install:*)",
+      "Bash(rustup target:*)",
+      "Bash(trunk build:*)",
+      "Bash(cargo clippy:*)",
+      "Bash(cargo fmt:*)"
+    ]
+  }
+}
