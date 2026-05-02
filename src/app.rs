@@ -3,7 +3,7 @@ use leptos::prelude::*;
 use std::time::Duration;
 use wasm_bindgen_futures::spawn_local;
 
-use crate::commands::{esc, run_command, ALIASES, ASCII, COMMANDS};
+use crate::commands::{ALIASES, ASCII, COMMANDS, esc, run_command};
 
 #[derive(Clone)]
 struct OutputItem {
@@ -11,10 +11,19 @@ struct OutputItem {
     html: String,
 }
 
-fn push_output(items: RwSignal<Vec<OutputItem>>, counter: RwSignal<usize>, html: impl Into<String>) {
+fn push_output(
+    items: RwSignal<Vec<OutputItem>>,
+    counter: RwSignal<usize>,
+    html: impl Into<String>,
+) {
     let id = counter.get_untracked();
     counter.update_untracked(|n| *n += 1);
-    items.update(|v| v.push(OutputItem { id, html: html.into() }));
+    items.update(|v| {
+        v.push(OutputItem {
+            id,
+            html: html.into(),
+        })
+    });
 }
 
 fn execute_cmd(

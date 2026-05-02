@@ -8,9 +8,22 @@ pub const ASCII: &str = "
 ";
 
 pub const COMMANDS: &[&str] = &[
-    "about", "clear", "contact", "date", "exit", "experience",
-    "help", "ls", "neofetch", "now", "projects", "pwd",
-    "skills", "social", "sudo", "whoami",
+    "about",
+    "clear",
+    "contact",
+    "date",
+    "exit",
+    "experience",
+    "help",
+    "ls",
+    "neofetch",
+    "now",
+    "projects",
+    "pwd",
+    "skills",
+    "social",
+    "sudo",
+    "whoami",
 ];
 
 pub const ALIASES: &[(&str, &str)] = &[
