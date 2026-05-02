@@ -1,29 +1,47 @@
 use gloo_timers::future::sleep;
 use leptos::prelude::*;
+use send_wrapper::SendWrapper;
+use std::rc::Rc;
 use std::time::Duration;
 use wasm_bindgen_futures::spawn_local;
 
-use crate::commands::{ALIASES, ASCII, COMMANDS, esc, run_command};
+use crate::commands::{ALIASES, ASCII, COMMANDS, run_command};
 
 #[derive(Clone)]
 struct OutputItem {
     id: usize,
-    html: String,
+    make_view: SendWrapper<Rc<dyn Fn() -> AnyView>>,
 }
 
-fn push_output(
+fn push_view(
     items: RwSignal<Vec<OutputItem>>,
     counter: RwSignal<usize>,
-    html: impl Into<String>,
+    f: impl Fn() -> AnyView + 'static,
 ) {
     let id = counter.get_untracked();
     counter.update_untracked(|n| *n += 1);
     items.update(|v| {
         v.push(OutputItem {
             id,
-            html: html.into(),
+            make_view: SendWrapper::new(Rc::new(f)),
         })
     });
+}
+
+fn prompt_view(cmd: String) -> AnyView {
+    view! {
+        <>
+            <span class="green">"gregory"</span>
+            <span class="muted">"@"</span>
+            <span class="cyan">"carnegie"</span>
+            <span class="muted">":"</span>
+            <span class="purple">"~"</span>
+            <span class="amber">"❯"</span>
+            " "
+            {cmd}
+        </>
+    }
+    .into_any()
 }
 
 fn execute_cmd(
@@ -33,20 +51,15 @@ fn execute_cmd(
     history: RwSignal<Vec<String>>,
     h_idx: RwSignal<i32>,
 ) {
-    let cmd = raw.trim();
+    let cmd = raw.trim().to_string();
     if cmd.is_empty() {
         return;
     }
 
-    push_output(
-        items,
-        counter,
-        format!(
-            r#"<span class="green">gregory</span><span class="muted">@</span><span class="cyan">carnegie</span><span class="muted">:</span><span class="purple">~</span><span class="amber">❯</span> {}"#,
-            esc(cmd)
-        ),
-    );
-    history.update(|h| h.insert(0, cmd.to_string()));
+    let echo = cmd.clone();
+    push_view(items, counter, move || prompt_view(echo.clone()));
+
+    history.update(|h| h.insert(0, cmd.clone()));
     h_idx.set(-1);
 
     let parts: Vec<&str> = cmd.split_whitespace().collect();
@@ -58,15 +71,20 @@ fn execute_cmd(
         return;
     }
     if name.starts_with("rm") {
-        push_output(
-            items,
-            counter,
-            r#"<span class="pink">rm: permission denied</span> <span class="muted">(nice try)</span>"#,
-        );
+        push_view(items, counter, || {
+            view! {
+                <>
+                    <span class="pink">"rm: permission denied"</span>
+                    " "
+                    <span class="muted">"(nice try)"</span>
+                </>
+            }
+            .into_any()
+        });
         return;
     }
 
-    push_output(items, counter, run_command(&name));
+    push_view(items, counter, move || run_command(&name));
 }
 
 #[component]
@@ -88,41 +106,55 @@ pub fn App() -> impl IntoView {
     });
 
     spawn_local(async move {
-        push_output(
-            items,
-            counter,
-            r#"<span class="muted">Last login: Fri Apr 24 09:14:22 on ttys002</span>"#,
-        );
+        push_view(items, counter, || {
+            view! { <span class="muted">"Last login: Fri Apr 24 09:14:22 on ttys002"</span> }
+                .into_any()
+        });
         sleep(Duration::from_millis(80)).await;
 
-        push_output(
-            items,
-            counter,
-            r#"<span class="muted">booting carnegie@portfolio v2.6.0 ...</span>"#,
-        );
+        push_view(items, counter, || {
+            view! { <span class="muted">"booting carnegie@portfolio v2.6.0 ..."</span> }.into_any()
+        });
         sleep(Duration::from_millis(80)).await;
 
-        push_output(
-            items,
-            counter,
-            r#"<span class="green">✓</span> identity verified — gregory@carnegie"#,
-        );
+        push_view(items, counter, || {
+            view! { <><span class="green">"✓"</span>" identity verified — gregory@carnegie"</> }
+                .into_any()
+        });
         sleep(Duration::from_millis(80)).await;
 
-        push_output(
-            items,
-            counter,
-            r#"<span class="green">✓</span> rust toolchain · <span class="green">✓</span> gpu drivers · <span class="green">✓</span> coffee"#,
-        );
+        push_view(items, counter, || {
+            view! {
+                <>
+                    <span class="green">"✓"</span>
+                    " rust toolchain · "
+                    <span class="green">"✓"</span>
+                    " gpu drivers · "
+                    <span class="green">"✓"</span>
+                    " coffee"
+                </>
+            }
+            .into_any()
+        });
         sleep(Duration::from_millis(220)).await;
 
-        push_output(
-            items,
-            counter,
-            format!(
-                r#"<pre class="ascii">{ASCII}</pre><div class="line"><span class="amber bold">Welcome.</span> This is an interactive CV. Type <span class="amber">help</span> to get started, or use the buttons below.</div><div class="line muted">Loaded · Rust · Python · PowerShell · wgpu · Axum · Polars · Maud · MCP · Entra ID · SCCM · Intune · Three.js · and too much else to list.</div>"#
-            ),
-        );
+        push_view(items, counter, || {
+            view! {
+                <>
+                    <pre class="ascii">{ASCII}</pre>
+                    <div class="line">
+                        <span class="amber bold">"Welcome."</span>
+                        " This is an interactive CV. Type "
+                        <span class="amber">"help"</span>
+                        " to get started, or use the buttons below."
+                    </div>
+                    <div class="line muted">
+                        "Loaded · Rust · Python · PowerShell · wgpu · Axum · Polars · Maud · MCP · Entra ID · SCCM · Intune · Three.js · and too much else to list."
+                    </div>
+                </>
+            }
+            .into_any()
+        });
         sleep(Duration::from_millis(400)).await;
 
         execute_cmd("whoami", items, counter, history, h_idx);
@@ -165,7 +197,7 @@ pub fn App() -> impl IntoView {
                         each=move || items.get()
                         key=|item| item.id
                         children=move |item| view! {
-                            <div class="line" inner_html=item.html />
+                            <div class="line">{(*item.make_view)()}</div>
                         }
                     />
                     <div node_ref=bottom_ref />
@@ -247,14 +279,12 @@ pub fn App() -> impl IntoView {
                                         if matches.len() == 1 {
                                             input.set_value(matches[0]);
                                         } else if matches.len() > 1 {
-                                            push_output(
-                                                items,
-                                                counter,
-                                                format!(
-                                                    r#"<span class="muted">{}</span>"#,
-                                                    matches.join("  ")
-                                                ),
-                                            );
+                                            let joined = matches.join("  ");
+                                            push_view(items, counter, move || {
+                                                let joined = joined.clone();
+                                                view! { <span class="muted">{joined}</span> }
+                                                    .into_any()
+                                            });
                                         }
                                     }
                                 }

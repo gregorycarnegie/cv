@@ -278,6 +278,7 @@ dependencies = [
  "gloo-timers",
  "js-sys",
  "leptos",
+ "send_wrapper",
  "wasm-bindgen",
  "wasm-bindgen-futures",
  "web-sys",
